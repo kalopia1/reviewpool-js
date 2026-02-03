@@ -14,6 +14,7 @@ export interface ReviewPoolConfig {
   lang?: string;
   init?: ReviewPoolUser;
   baseUrl?: string;
+  token?: string;
 }
 
 interface ReviewPoolGlobal {
@@ -36,11 +37,6 @@ const pushCommand = (method: string, payload?: any) => {
   window.reviewpool = window.reviewpool || { q: [] };
 
   if (window.reviewpool.q) {
-
-    // construct payload
-    const newPayload = {
-      widgetId: payload
-    }
     window.reviewpool.q.push([method, payload]);
   } else {
     const fn = (window.reviewpool as any)[method];
@@ -49,7 +45,8 @@ const pushCommand = (method: string, payload?: any) => {
 };
 
 export const reviewpool = {
-  identify: (user: ReviewPoolUser) => pushCommand("identify", user),
+  identify: (user: ReviewPoolUser, token?: string) =>
+    pushCommand("identify", { ...user, token }),
   unidentify: () => pushCommand("unidentify"),
 };
 
@@ -58,7 +55,8 @@ export const ReviewPoolScript: React.FC<ReviewPoolConfig> = ({
   clientId,
   lang = "en",
   init,
-  baseUrl = "https://app.ideadope.com", // Set your production default here
+  baseUrl = "https://app.ideadope.com",
+  token,
 }) => {
   // Use a ref to ensure we only send the initial identify ONCE per mount
   const hasIdentified = useRef(false);
@@ -68,7 +66,7 @@ export const ReviewPoolScript: React.FC<ReviewPoolConfig> = ({
 
     // 1. Initial Identity Capture (Guarded by Ref)
     if (init?.email && !hasIdentified.current) {
-      reviewpool.identify(init);
+      reviewpool.identify(init, token);
       hasIdentified.current = true;
     }
 
