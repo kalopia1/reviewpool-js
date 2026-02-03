@@ -1,0 +1,33 @@
+{
+  "name": "@ideadope/reviewpool-js",
+  "version": "1.0.0",
+  "description": "Tiny, type-safe wrapper for IdeaDope ReviewPool",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/types/index.d.ts",
+  "scripts": {
+    "build": "npm run build:tsc && npm run build:esbuild",
+    "build:tsc": "tsc --declaration --declarationDir dist/types --emitDeclarationOnly",
+    "build:esbuild": "esbuild src/index.ts --bundle --minify --sourcemap --platform=browser --target=esnext --external:react --outfile=dist/index.js && esbuild src/index.ts --bundle --minify --sourcemap --platform=browser --target=esnext --format=esm --external:react --outfile=dist/index.mjs",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "files": [
+    "dist/index.js",
+    "dist/index.mjs",
+    "dist/types/index.d.ts"
+  ],
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "esbuild": "^0.25.0",
+    "react": "^18.0.0",
+    "typescript": "^4.0.0"
+  }
+}
