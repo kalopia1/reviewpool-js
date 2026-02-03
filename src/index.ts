@@ -5,13 +5,13 @@ export interface ReviewPoolUser {
   email: string;
   name?: string;
   userId?: string;
-  [key: string]: any;
+  metadata?: { [key: string]: any };
 }
 
 export interface ReviewPoolConfig {
   clientId: string;
   lang?: string;
-  baseUrl?: string;
+  init?: ReviewPoolUser;
 }
 
 // Extend the Window interface for the browser environment
@@ -53,7 +53,10 @@ export const reviewpool = {
     } else {
       // Otherwise, push to queue
       window.reviewpool.q = window.reviewpool.q || [];
-      window.reviewpool.q.push(["identify", user]);
+      window.reviewpool.q.push([
+        "identify",
+        user,
+      ]);
     }
   },
 
@@ -77,8 +80,10 @@ export const reviewpool = {
 export const ReviewPoolScript: React.FC<ReviewPoolConfig> = ({
   clientId,
   lang = "en",
-  baseUrl = "https://your-production-domain.com",
+  init,
 }) => {
+  //TODO: set this to prod url
+  const baseUrl = "http://localhost:3000";
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -93,6 +98,12 @@ export const ReviewPoolScript: React.FC<ReviewPoolConfig> = ({
           this.q?.push(["unidentify"]);
         },
       };
+    }
+
+    // initialize user data
+
+    if (init?.email) {
+      reviewpool.identify(init);
     }
 
     if (document.getElementById("reviewpool-widget-script")) return;
